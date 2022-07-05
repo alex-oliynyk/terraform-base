@@ -2,7 +2,7 @@
 # S3 bucket
 #######################################
 resource "aws_s3_bucket" "base_bucket" {
-  bucket = "base-bucket"
+  bucket = "base-bucket-oswlj"
 }
 
 resource "aws_s3_bucket_versioning" "base_s3_versioning" {
