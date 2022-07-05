@@ -1,32 +1,32 @@
 #######################################
 # S3 bucket
 #######################################
-resource "aws_s3_bucket" "sentrifugo_bucket" {
-  bucket = "sentrifugo-bucket"
-  acl    = "private"
+resource "aws_s3_bucket" "base_bucket" {
+  bucket = "base-bucket"
+}
 
-  versioning {
-        enabled = true
-  }
-
-  lifecycle_rule {
-    id = "retention"
-    enabled = true
-
-    noncurrent_version_expiration {
-      days = 90
-    }
+resource "aws_s3_bucket_versioning" "base_s3_versioning" {
+  bucket = aws_s3_bucket.base_bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "bucket-config" {
+  bucket = aws_s3_bucket.base_bucket.id
 
-#######################################
-# S3 bucket object
-#######################################
-resource "aws_s3_bucket_object" "sentrifugo_object" {
-  bucket = "sentrifugo-bucket"
-  key    = "sentrifugo.zip"
-  source = "../sentrifugo.zip"
-  etag = filemd5("../sentrifugo.zip")
-  depends_on  = [aws_s3_bucket.sentrifugo_bucket]
+  rule {
+    id = "expiration"
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_acl" "base_bucket_acl" {
+  bucket = aws_s3_bucket.base_bucket.id
+  acl    = "private"
 }
